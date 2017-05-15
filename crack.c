@@ -31,11 +31,6 @@ int main(int argc, string argv[])
         //Empty array to store the upper and lower case alphabet. Initialized w/ NULL characters to eliminate undefined behavior
         char alphabet[54];
         memset(alphabet,'\0',sizeof(alphabet));
-
-        // AAmVRJSUZ5juU hash for pwd='rofl' with salt='AA'
-        // AAgCfzsl6NSeo hash for pwd='AAAB' with salt='AA'
-        // AAHiifSbPPOKE hash for pwd='zyzz' with salt='AA'
-        // 50BDJdBnHsHWA hash for pwd='zyzz' with salt='50'
         
          // Fill 'alphabet' with all upper and lower case letters
         for (int i=0;i<26;i++)
@@ -44,7 +39,7 @@ int main(int argc, string argv[])
             alphabet[i+26]  =  (char)(i+97);
         }
 
-        
+        // Try all possible 1-, 2-, 3-, and 4- character passwords
         for (int n=0;n<53;n++)
         {
             for (int i=0;i<53;i++)
@@ -54,7 +49,7 @@ int main(int argc, string argv[])
                     for (int p=0;p<52;p++)
                     {
                         pwd[0]=alphabet[p];
-                        match(pwd,salt,hash);
+                        match(pwd,salt,hash); // Check for a match between user hash and generated hash
                     }
                     pwd[0]='A';
                     pwd[1]=alphabet[j];
@@ -75,7 +70,7 @@ void match(string pwd, string salt, string hash)
 {
     if(strcmp(crypt(pwd,salt),hash)==0)
         {
-            printf("%s\n",pwd);
-            exit(0);
+            printf("%s\n",pwd); // If the 2 hashes match, print password
+            exit(0);            // exit if match
         }
 }
