@@ -21,41 +21,49 @@ int main(int argc, string argv[])
         // User inputs a hash at the cmd line
         string hash = argv[1];
         
-        char salt[3]; // Took me an hour to figure out that you can't modify string literals because they point to read-only memory
-        salt[0] = hash[0]; // Generate the salt based on the first 2 characters of the input hash
-        salt[1] = hash[1];
-        char pwd[]= "AAAA"; // Starting password
+        // Salt is actually the first 2 characters of the hash
+        char salt[] = { hash[0], hash[1], '\0' };
         
+        //Empty array of passwords that we will try later. Initialized w/ NULL characters to eliminate undefined behavior
+        char pwd[5];
+        memset(pwd,'\0',sizeof(pwd));
+        
+        //Empty array to store the upper and lower case alphabet. Initialized w/ NULL characters to eliminate undefined behavior
+        char alphabet[54];
+        memset(alphabet,'\0',sizeof(alphabet));
+
         // AAmVRJSUZ5juU hash for pwd='rofl' with salt='AA'
         // AAgCfzsl6NSeo hash for pwd='AAAB' with salt='AA'
-        // AA1c0HA0ncGaY hash for pwd='COBB' with salt='AA'
-        // AAr5Df55N2Tto hash for pwd='ZAZZ' with salt='AA'
         // AAHiifSbPPOKE hash for pwd='zyzz' with salt='AA'
         // 50BDJdBnHsHWA hash for pwd='zyzz' with salt='50'
         
-        // 4 nested FOR loops to run through all 4-letter alphabetic passwords
-        for (int i=0;i<58;i++) // Count 58 since there are 6 non-alphabetic characters sandwiched between ASCII upper and lower case
+         // Fill 'alphabet' with all upper and lower case letters
+        for (int i=0;i<26;i++)
         {
-            pwd[1]='A'; // Reset the 2nd character for the next iteration
-            for (int n=0;n<58;n++)
+            alphabet[i]   =  (char)(i+65);
+            alphabet[i+26]  =  (char)(i+97);
+        }
+
+        
+        for (int n=0;n<53;n++)
+        {
+            for (int i=0;i<53;i++)
             {
-                pwd[2]='A'; // etc
-                for (int j=0;j<58;j++)
+                for (int j=0;j<53;j++)
                 {
-                    pwd[3]='A';
-                    for (int p=0;p<58;p++)
+                    for (int p=0;p<52;p++)
                     {
-                        if (!((p>25 && p<32)||(j>25 && j<32)||(n>25 && n<32)||(i>25 && i<32))) // Ignore special characters between ASCII upper and lower case 
-                        {
-                            match(pwd,salt,hash); // Call to our function 'match' that compares the user's hash with our own generated hash
-                        }
-                        pwd[3]++;
+                        pwd[0]=alphabet[p];
+                        match(pwd,salt,hash);
                     }
-                    pwd[2]++;    
+                    pwd[0]='A';
+                    pwd[1]=alphabet[j];
                 }
-                pwd[1]++;    
+                pwd[1]='A';
+                pwd[2]=alphabet[i];
             }
-            pwd[0]++;    
+            pwd[2]='A';
+            pwd[3]=alphabet[n];   
         }
         return 0;
     }
@@ -68,6 +76,6 @@ void match(string pwd, string salt, string hash)
     if(strcmp(crypt(pwd,salt),hash)==0)
         {
             printf("%s\n",pwd);
-            //exit(0);
+            exit(0);
         }
 }
